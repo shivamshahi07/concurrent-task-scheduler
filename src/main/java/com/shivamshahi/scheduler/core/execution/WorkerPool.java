@@ -168,6 +168,9 @@ public class WorkerPool {
 
             Duration duration = Duration.between(startInstant, Instant.now());
             context.setLastResult(result);
+            if (!task.isRecurring()) {
+                context.tryTransitionTo(JobStatus.COMPLETED);
+            }
             metrics.incrementCompleted();
             eventDispatcher.dispatch(new TaskSchedulerEvent.TaskCompleted(jobId, duration, result, Instant.now()));
 
@@ -177,8 +180,6 @@ public class WorkerPool {
             // Handle recurring task rescheduling
             if (task.isRecurring() && running.get()) {
                 rescheduleRecurring(task);
-            } else {
-                context.tryTransitionTo(JobStatus.COMPLETED);
             }
 
         } catch (Throwable t) {

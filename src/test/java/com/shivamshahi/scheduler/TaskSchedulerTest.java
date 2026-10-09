@@ -230,11 +230,15 @@ class TaskSchedulerTest {
     @DisplayName("Should enforce bounded queue capacity and reject overflowing tasks")
     void testBoundedQueueRejection() throws InterruptedException {
         TaskScheduler smallScheduler = new TaskScheduler(1, 2);
+        CountDownLatch started = new CountDownLatch(1);
         CountDownLatch pause = new CountDownLatch(1);
 
         smallScheduler.submit(TaskDefinition.newBuilder().name("t1").action(() -> {
-            try { pause.await(500, TimeUnit.MILLISECONDS); } catch (Exception ignored) {}
+            started.countDown();
+            try { pause.await(1000, TimeUnit.MILLISECONDS); } catch (Exception ignored) {}
         }).build());
+
+        assertThat(started.await(2, TimeUnit.SECONDS)).isTrue();
         smallScheduler.submit(TaskDefinition.newBuilder().name("t2").action(() -> {}).build());
         smallScheduler.submit(TaskDefinition.newBuilder().name("t3").action(() -> {}).build());
 
