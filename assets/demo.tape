@@ -9,9 +9,15 @@ Set Theme "Catppuccin Mocha"
 Set WindowBar Colorful
 Set LetterSpacing 0
 
-Type "cd /Users/shivam/Developer/concurrent-task-scheduler && clear"
+Hide
+Type "cd ~/Developer && clear"
 Enter
-Sleep 500ms
+Sleep 400ms
+Show
+
+Type "cd concurrent-task-scheduler"
+Enter
+Sleep 600ms
 
 Type "mvn test -q"
 Enter
