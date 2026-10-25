@@ -20,6 +20,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -47,6 +48,17 @@ class TaskSchedulerTest {
         scheduler.shutdownNow();
     }
 
+    private void awaitCompletion(JobId jobId, Duration timeout) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + timeout.toMillis();
+        while (System.currentTimeMillis() < deadline) {
+            Optional<JobStatus> status = scheduler.getStatus(jobId);
+            if (status.isPresent() && status.get().isTerminal()) {
+                return;
+            }
+            Thread.sleep(10);
+        }
+    }
+
     @Test
     @DisplayName("Should execute immediate tasks successfully")
     void testImmediateTasks() throws InterruptedException {
@@ -62,6 +74,7 @@ class TaskSchedulerTest {
 
         assertThat(latch.await(2, TimeUnit.SECONDS)).isTrue();
         assertThat(ran.get()).isTrue();
+        awaitCompletion(jobId, Duration.ofSeconds(2));
         assertThat(scheduler.getStatus(jobId)).contains(JobStatus.COMPLETED);
     }
 
@@ -80,6 +93,7 @@ class TaskSchedulerTest {
         assertThat(latch.await(2, TimeUnit.SECONDS)).isTrue();
         long elapsed = System.currentTimeMillis() - startTime;
         assertThat(elapsed).isGreaterThanOrEqualTo(70);
+        awaitCompletion(jobId, Duration.ofSeconds(2));
         assertThat(scheduler.getStatus(jobId)).contains(JobStatus.COMPLETED);
     }
 
@@ -161,6 +175,7 @@ class TaskSchedulerTest {
                 }).build());
 
         assertThat(latch.await(3, TimeUnit.SECONDS)).isTrue();
+        awaitCompletion(jobId, Duration.ofSeconds(2));
         assertThat(scheduler.getStatus(jobId)).contains(JobStatus.COMPLETED);
         assertThat(scheduler.getContext(jobId).get().getAttemptCount()).isEqualTo(2);
     }
@@ -222,7 +237,7 @@ class TaskSchedulerTest {
                 .action(() -> {})
                 .build());
 
-        Thread.sleep(150);
+        awaitCompletion(child, Duration.ofSeconds(2));
         assertThat(scheduler.getStatus(child)).contains(JobStatus.FAILED);
     }
 

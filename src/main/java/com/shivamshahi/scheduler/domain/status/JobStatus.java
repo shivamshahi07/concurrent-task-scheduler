@@ -5,11 +5,15 @@ package com.shivamshahi.scheduler.domain.status;
  * Allowed transitions:
  * QUEUED -> RUNNING
  * QUEUED -> CANCELLED
+ * QUEUED -> FAILED
  * RUNNING -> COMPLETED
  * RUNNING -> FAILED
  * RUNNING -> RETRY_WAITING
+ * RUNNING -> QUEUED
+ * RUNNING -> CANCELLED
  * RETRY_WAITING -> QUEUED
  * RETRY_WAITING -> CANCELLED
+ * RETRY_WAITING -> FAILED
  */
 public enum JobStatus {
     QUEUED,
@@ -27,7 +31,7 @@ public enum JobStatus {
         if (this == next) return false;
         return switch (this) {
             case QUEUED -> next == RUNNING || next == CANCELLED || next == FAILED;
-            case RUNNING -> next == COMPLETED || next == FAILED || next == RETRY_WAITING || next == QUEUED;
+            case RUNNING -> next == COMPLETED || next == FAILED || next == RETRY_WAITING || next == QUEUED || next == CANCELLED;
             case RETRY_WAITING -> next == QUEUED || next == CANCELLED || next == FAILED;
             case COMPLETED, FAILED, CANCELLED -> false;
         };

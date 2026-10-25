@@ -38,6 +38,7 @@ class DomainAndPolicyTest {
         assertThat(JobStatus.RUNNING.canTransitionTo(JobStatus.COMPLETED)).isTrue();
         assertThat(JobStatus.RUNNING.canTransitionTo(JobStatus.FAILED)).isTrue();
         assertThat(JobStatus.RUNNING.canTransitionTo(JobStatus.RETRY_WAITING)).isTrue();
+        assertThat(JobStatus.RUNNING.canTransitionTo(JobStatus.CANCELLED)).isTrue();
 
         assertThat(JobStatus.RETRY_WAITING.canTransitionTo(JobStatus.QUEUED)).isTrue();
         assertThat(JobStatus.RETRY_WAITING.canTransitionTo(JobStatus.CANCELLED)).isTrue();

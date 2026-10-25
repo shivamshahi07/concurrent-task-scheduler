@@ -133,8 +133,11 @@ public class TaskScheduler {
                     workerThread.interrupt();
                 }
             }
-            // State will be finalized when worker finishes or catches interrupt
-            return true;
+            if (context.tryTransitionTo(JobStatus.CANCELLED)) {
+                metrics.incrementCancelled();
+                eventDispatcher.dispatch(new TaskSchedulerEvent.TaskCancelled(jobId, currentStatus, Instant.now()));
+                return true;
+            }
         }
         return false;
     }

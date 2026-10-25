@@ -166,6 +166,10 @@ public class WorkerPool {
                 result = task.getExecutable().call();
             }
 
+            if (context.getStatus() == JobStatus.CANCELLED) {
+                return;
+            }
+
             Duration duration = Duration.between(startInstant, Instant.now());
             context.setLastResult(result);
             if (!task.isRecurring()) {
@@ -183,6 +187,9 @@ public class WorkerPool {
             }
 
         } catch (Throwable t) {
+            if (context.getStatus() == JobStatus.CANCELLED) {
+                return;
+            }
             Throwable cause = (t instanceof ExecutionException && t.getCause() != null) ? t.getCause() : t;
             if (cause instanceof RuntimeException && cause.getCause() != null) {
                 cause = cause.getCause();
