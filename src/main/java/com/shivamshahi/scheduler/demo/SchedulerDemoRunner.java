@@ -240,8 +240,9 @@ public class SchedulerDemoRunner {
         CountDownLatch tinyLatch = new CountDownLatch(1);
         // Fill worker & queue
         tinyScheduler.submit(TaskDefinition.newBuilder().name("hold-1").action(() -> {
-            try { tinyLatch.await(1, TimeUnit.SECONDS); } catch (Exception ignored) {}
+            try { tinyLatch.await(2, TimeUnit.SECONDS); } catch (Exception ignored) {}
         }).build());
+        Thread.sleep(100);
         tinyScheduler.submit(TaskDefinition.newBuilder().name("q-1").action(() -> {}).build());
         tinyScheduler.submit(TaskDefinition.newBuilder().name("q-2").action(() -> {}).build());
 
@@ -292,6 +293,7 @@ public class SchedulerDemoRunner {
         System.out.println(SEPARATOR);
         System.out.println("   ALL 18 CONCURRENT TASK SCHEDULER SCENARIOS EXECUTED SUCCESSFULLY!");
         System.out.println(SEPARATOR);
+        System.exit(0);
     }
 
     private static void printHeader(int num, String title) {

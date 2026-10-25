@@ -5,6 +5,10 @@
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Coverage](https://img.shields.io/badge/coverage-87.4%25-brightgreen)](target/site/jacoco/index.html)
 
+<div align="center">
+  <img src="assets/demo.gif" alt="Concurrent Task Scheduler CLI Execution Demo" width="900px" style="border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+</div>
+
 A high-performance, modular Java library for concurrent task orchestration supporting immediate, delayed, recurring, priority-ordered, and DAG-dependent task execution with bounded admission control, graceful shutdown, and worker thread fault isolation.
 
 ---
